@@ -1,12 +1,12 @@
 from flask import Flask, request
 from telegram import Update
 from telegram.ext import Application, CommandHandler
-
 import config
 
+# Flask app for webhook
 app = Flask(__name__)
 
-# Initialize bot
+# Initialize Telegram bot
 application = Application.builder().token(config.BOT_TOKEN).build()
 
 # --- Command Handlers ---
@@ -51,7 +51,11 @@ def webhook():
     application.update_queue.put_nowait(update)
     return "ok", 200
 
-# --- Flask route for testing ---
+# --- Flask test route ---
 @app.route("/")
 def home():
     return "SolInvestAI Bot is running!", 200
+
+# Run locally (Render will use gunicorn)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
