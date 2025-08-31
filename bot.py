@@ -1,7 +1,7 @@
 from flask import Flask, request
 from telegram import Update
 from telegram.ext import Application, CommandHandler
-import asyncio
+
 import config
 
 app = Flask(__name__)
@@ -44,14 +44,14 @@ application.add_handler(CommandHandler("p2p", p2p))
 application.add_handler(CommandHandler("trade", trade))
 application.add_handler(CommandHandler("automation", automation))
 
-# --- Webhook route ---
+# --- Flask route for Telegram Webhook ---
 @app.route("/", methods=["POST"])
 def webhook():
     update = Update.de_json(request.get_json(force=True), application.bot)
-    asyncio.run(application.process_update(update))
+    application.update_queue.put_nowait(update)
     return "ok", 200
 
-# --- Home route for testing ---
+# --- Flask route for testing ---
 @app.route("/")
 def home():
     return "SolInvestAI Bot is running!", 200
